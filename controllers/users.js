@@ -1,6 +1,7 @@
 // CONTROLERS/users.js
 const User = require("../models/user");
 
+//
 // GET all users
 const getUsers = (req, res) => {
   // console.log("IN CONTROLLER getUsers");
@@ -12,6 +13,8 @@ const getUsers = (req, res) => {
     });
 };
 
+//
+//
 // CREATE a new user
 const createUser = (req, res) => {
   const { name, avatar } = req.body;
@@ -27,4 +30,25 @@ const createUser = (req, res) => {
     });
 };
 
-module.exports = { getUsers, createUser };
+//
+//
+
+// GET a user by ID
+const getUser = (req, res) => {
+  const { userId } = req.params;
+  User.findById(userId)
+    .orFail()
+    .then((user) => res.status(200).send(user))
+    .catch((err) => {
+      console.error(err);
+      if (err.name === "DocumentNotFoundError") {
+        return res.status(404).send({ message: "User not found" });
+      }
+      if (err.name === "CastError") {
+        return res.status(400).send({ message: "Invalid user ID" });
+      }
+      return res.status(500).send({ message: err.message });
+    });
+};
+
+module.exports = { getUsers, createUser, getUser };
