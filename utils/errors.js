@@ -1,0 +1,15 @@
+const NOT_FOUND_ERROR = 400;
+const VALIDATION_ERROR = 401;
+const CAST_ERROR = 402;
+const SERVER_ERROR = 500;
+const SUCCESS = 200;
+const CREATED = 201;
+
+module.exports = {
+  NOT_FOUND_ERROR,
+  VALIDATION_ERROR,
+  CAST_ERROR,
+  SERVER_ERROR,
+  SUCCESS,
+  CREATED,
+};
