@@ -4,7 +4,7 @@ const userRouter = require("./users");
 
 const { SERVER_ERROR } = require("../utils/errors");
 
-router.use("/clothing-items", clothingItem);
+router.use("/items", clothingItem);
 router.use("/users", userRouter);
 
 router.use((req, res) => {
