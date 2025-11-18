@@ -2,9 +2,10 @@
 const User = require("../models/user");
 // import error codes
 const {
-  NOT_FOUND_ERROR,
-  VALIDATION_ERROR,
-  CAST_ERROR,
+  BAD_REQUEST,
+  UNAUTHORIZED,
+  FORBIDDEN,
+  NOT_FOUND,
   SERVER_ERROR,
   SUCCESS,
   CREATED,
@@ -19,7 +20,7 @@ const getUsers = (req, res) => {
     .then((users) => res.status(SUCCESS).send(users))
     .catch((err) => {
       console.error(err);
-      return res.status(SERVER_ERROR).send({ message: err.message });
+      return res.status(SERVER_ERROR).send({ message: "Server error" });
     });
 };
 
@@ -34,9 +35,9 @@ const createUser = (req, res) => {
     .catch((err) => {
       console.error(err);
       if (err.name === "ValidationError") {
-        return res.status(VALIDATION_ERROR).send({ message: err.message });
+        return res.status(BAD_REQUEST).send({ message: "Invalid user data" });
       }
-      return res.status(SERVER_ERROR).send({ message: err.message });
+      return res.status(SERVER_ERROR).send({ message: "Server error" });
     });
 };
 
@@ -51,12 +52,12 @@ const getUser = (req, res) => {
     .catch((err) => {
       console.error(err);
       if (err.name === "DocumentNotFoundError") {
-        return res.status(NOT_FOUND_ERROR).send({ message: "User not found" });
+        return res.status(NOT_FOUND).send({ message: "User not found" });
       }
       if (err.name === "CastError") {
-        return res.status(CAST_ERROR).send({ message: "Invalid user ID" });
+        return res.status(BAD_REQUEST).send({ message: "Invalid user ID" });
       }
-      return res.status(SERVER_ERROR).send({ message: err.message });
+      return res.status(SERVER_ERROR).send({ message: "Server error" });
     });
 };
 

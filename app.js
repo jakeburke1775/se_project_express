@@ -11,6 +11,15 @@ mongoose
   .catch(console.error);
 
 app.use(express.json());
+
+// Temporary middleware to simulate logged-in user for testing
+app.use((req, res, next) => {
+  req.user = {
+    _id: "507f1f77bcf86cd799439011", // Temporary user ID for testing
+  };
+  next();
+});
+
 app.use("/", mainRouter);
 
 app.listen(PORT, () => {

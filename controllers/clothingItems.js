@@ -1,10 +1,11 @@
 const ClothingItem = require("../models/clothingItem");
-const { CREATED, SERVER_ERROR, SUCCESS } = require("../utils/errors");
+const { CREATED, SERVER_ERROR, SUCCESS, NOT_FOUND, BAD_REQUEST } = require("../utils/errors");
 
 const createItem = (req, res) => {
   // console.log("Request body:", req.body); // Add this line to debug
 
-  const { name, weather, imageUrl, owner } = req.body;
+  const { name, weather, imageUrl } = req.body;
+  const owner = req.user._id;
 
   ClothingItem.create({ name, weather, imageUrl, owner }) // changed from URL to Url
     .then((item) => {
@@ -13,7 +14,7 @@ const createItem = (req, res) => {
     })
     .catch((err) => {
       console.error(err);
-      res.status(SERVER_ERROR).send({ message: err.message });
+      res.status(SERVER_ERROR).send({ message: "Server error" });
     });
 };
 
@@ -22,37 +23,87 @@ const getItems = (req, res) => {
     .then((items) => res.status(SUCCESS).send(items))
     .catch((err) => {
       // console.error(err); // Uncomment this line to log the error for debugging
-      res.status(SERVER_ERROR).send({ message: "Error from getItems", err });
-    });
-};
-
-const updateItem = (req, res) => {
-  const { itemId } = req.params;
-  const { imageUrl } = req.body;
-
-  ClothingItem.findByIdAndUpdate(itemId, { $set: { imageUrl } })
-    .orFail()
-    .then((item) => {
-      res.status(SUCCESS).send({ data: item });
-    })
-    .catch((err) => {
-      // console.error(err); // Uncomment this line to log the error for debugging
-      res.status(SERVER_ERROR).send({ message: "Error from updateItem", err });
+      res.status(SERVER_ERROR).send({ message: "Server error" });
     });
 };
 
 const deleteItem = (req, res) => {
   const { itemId } = req.params;
-  // console.log("Deleting item with ID:", itemId); // Debugging line
+  // console.log("Deleting item with ID:", itemId); // Uncomment this line to log the error for debugging
   ClothingItem.findByIdAndDelete(itemId)
     .orFail()
     .then((item) => {
       res.status(SUCCESS).send({ data: item });
     })
     .catch((err) => {
-      // console.error(err); // Uncomment this line to log the error for debugging
-      res.status(SERVER_ERROR).send({ message: "Error from deleteItem", err });
+      console.error(err);
+      
+      if (err.name === 'DocumentNotFoundError') {
+        return res.status(NOT_FOUND).send({ message: "Item not found" });
+      }
+      
+      if (err.name === 'CastError') {
+        return res.status(BAD_REQUEST).send({ message: "Invalid item ID" });
+      }
+      
+      res.status(SERVER_ERROR).send({ message: "Server error" });
     });
 };
 
-module.exports = { createItem, getItems, updateItem, deleteItem };
+const updateItemLikes = (req, res) => {
+  const { itemId } = req.params;
+  const userId = req.user._id;
+
+  ClothingItem.findByIdAndUpdate(
+    itemId,
+    { $addToSet: { likes: userId } },
+    { new: true }
+  )
+    .orFail()
+    .then((item) => {
+      res.status(SUCCESS).send({ data: item });
+    })
+    .catch((err) => {
+      console.error(err);
+      
+      if (err.name === 'DocumentNotFoundError') {
+        return res.status(NOT_FOUND).send({ message: "Item not found" });
+      }
+      
+      if (err.name === 'CastError') {
+        return res.status(BAD_REQUEST).send({ message: "Invalid item ID" });
+      }
+      
+      res.status(SERVER_ERROR).send({ message: "Server error" });
+    });
+};
+
+const removeItemLike = (req, res) => {
+  const { itemId } = req.params;
+  const userId = req.user._id;
+
+  ClothingItem.findByIdAndUpdate(
+    itemId,
+    { $pull: { likes: userId } },
+    { new: true }
+  )
+    .orFail()
+    .then((item) => {
+      res.status(SUCCESS).send({ data: item });
+    })
+    .catch((err) => {
+      console.error(err);
+      
+      if (err.name === 'DocumentNotFoundError') {
+        return res.status(NOT_FOUND).send({ message: "Item not found" });
+      }
+      
+      if (err.name === 'CastError') {
+        return res.status(BAD_REQUEST).send({ message: "Invalid item ID" });
+      }
+      
+      res.status(SERVER_ERROR).send({ message: "Server error" });
+    });
+};
+
+module.exports = { createItem, getItems, deleteItem, updateItemLikes, removeItemLike };
