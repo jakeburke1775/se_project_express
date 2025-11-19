@@ -14,7 +14,12 @@ const createItem = (req, res) => {
     })
     .catch((err) => {
       console.error(err);
-      res.status(SERVER_ERROR).send({ message: "Server error" });
+      
+      if (err.name === 'ValidationError') {
+        return res.status(BAD_REQUEST).send({ message: "Invalid data provided" });
+      }
+      
+      return res.status(SERVER_ERROR).send({ message: "Server error" });
     });
 };
 
@@ -22,8 +27,8 @@ const getItems = (req, res) => {
   ClothingItem.find({})
     .then((items) => res.status(SUCCESS).send(items))
     .catch((err) => {
-      // console.error(err); // Uncomment this line to log the error for debugging
-      res.status(SERVER_ERROR).send({ message: "Server error" });
+      console.error(err);
+      return res.status(SERVER_ERROR).send({ message: "Server error" });
     });
 };
 
@@ -46,7 +51,7 @@ const deleteItem = (req, res) => {
         return res.status(BAD_REQUEST).send({ message: "Invalid item ID" });
       }
       
-      res.status(SERVER_ERROR).send({ message: "Server error" });
+      return res.status(SERVER_ERROR).send({ message: "Server error" });
     });
 };
 
@@ -74,7 +79,7 @@ const updateItemLikes = (req, res) => {
         return res.status(BAD_REQUEST).send({ message: "Invalid item ID" });
       }
       
-      res.status(SERVER_ERROR).send({ message: "Server error" });
+      return res.status(SERVER_ERROR).send({ message: "Server error" });
     });
 };
 
@@ -102,7 +107,7 @@ const removeItemLike = (req, res) => {
         return res.status(BAD_REQUEST).send({ message: "Invalid item ID" });
       }
       
-      res.status(SERVER_ERROR).send({ message: "Server error" });
+      return res.status(SERVER_ERROR).send({ message: "Server error" });
     });
 };
 

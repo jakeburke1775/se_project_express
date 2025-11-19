@@ -3,8 +3,6 @@ const User = require("../models/user");
 // import error codes
 const {
   BAD_REQUEST,
-  UNAUTHORIZED,
-  FORBIDDEN,
   NOT_FOUND,
   SERVER_ERROR,
   SUCCESS,

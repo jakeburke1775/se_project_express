@@ -1,4 +1,5 @@
-# Express API Framework Template
+# Express API Framework Template Directions
+For creating a new API based on what I learned from this project
 
 ## 📋 Overview
 This project serves as a **solid, battle-tested framework** for building Express.js APIs with MongoDB. Use this as a foundation to copy and adapt for new projects. The structure, patterns, and conventions established here ensure consistent, secure, and maintainable APIs.
